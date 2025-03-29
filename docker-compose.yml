@@ -1,0 +1,37 @@
+---
+version: '3.8'
+networks:
+  mynetwork:
+    name: "pmacontrol-net"
+services:
+  mariadb:
+    container_name: "mariadb"
+    build:
+      context: .
+      dockerfile: mariadb/Dockerfile
+    restart: always
+#    volumes:
+#      - db:/var/lib/mysql:Z
+    environment:
+      - MARIADB_ROOT_PASSWORD=password
+      - MARIADB_AUTO_UPGRADE=1
+      - MARIADB_DISABLE_UPGRADE_BACKUP=1
+    networks:
+      - mynetwork
+
+  pmacontrol:
+    container_name: "pmacontrol"
+    build:
+      context: .
+      dockerfile: pmacontrol/Dockerfile
+    restart: always
+    environment:
+      - PMACONTROL_DB_HOST=mariadb
+      - PMACONTROL_DB_USER=root
+      - PMACONTROL_DB_PASSWORD=password
+      - PMACONTROL_DB_BASE=pmacontrol
+    ports:
+      - "8080:80"
+    networks:
+      - mynetwork
+
