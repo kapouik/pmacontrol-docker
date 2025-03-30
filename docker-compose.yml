@@ -10,8 +10,9 @@ services:
       context: .
       dockerfile: mariadb/Dockerfile
     restart: always
-#    volumes:
+    volumes:
 #      - db:/var/lib/mysql:Z
+      - ./mariadb/init/:/docker-entrypoint-initdb.d/:ro
     environment:
       - MARIADB_ROOT_PASSWORD=password
       - MARIADB_AUTO_UPGRADE=1
