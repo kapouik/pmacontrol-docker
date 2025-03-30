@@ -49,12 +49,17 @@ RUN sed -ri -e "s!hostname=127.0.0.1!hostname=${PMACONTROL_DB_HOST}!" configurat
     sed -ri -e "s!user=root!user=${PMACONTROL_DB_USER}!" configuration/db.config.ini.php && \
     sed -ri -e "s!password='password'!password=${PMACONTROL_DB_PASSWORD}!" configuration/db.config.ini.php && \
     sed -ri -e "s!database=pmacontrol!database=${PMACONTROL_DB_BASE}!" configuration/db.config.ini.php
-RUN /usr/local/bin/php App/Webroot/index.php install index
-RUN /usr/local/bin/php App/Webroot/index.php install createOrganisation
-RUN /usr/local/bin/php App/Webroot/index.php install createAdmin
-RUN /usr/local/bin/php App/Webroot/index.php control createTsTable
-RUN /usr/local/bin/php App/Webroot/index.php agent updateServerList
-RUN /usr/local/bin/php App/Webroot/index.php administration generate_model
-RUN /usr/local/bin/php App/Webroot/index.php administration admin_table
+COPY ./pmacontrol/json/config.json /tmp/config.json
+RUN sed -ri -e "s!DB_HOST!${PMACONTROL_DB_HOST}!" /tmp/config.json && \
+    sed -ri -e "s!DB_USER!${PMACONTROL_DB_USER}!" /tmp/config.json && \
+    sed -ri -e "s!DB_PASSWORD!${PMACONTROL_DB_PASSWORD}!" /tmp/config.json && \
+    sed -ri -e "s!DB_BASE!${PMACONTROL_DB_BASE}!" /tmp/config.json
+RUN /usr/local/bin/php App/Webroot/index.php install index /tmp/config.json
+RUN /usr/local/bin/php App/Webroot/index.php install createOrganisation /tmp/config.json
+RUN /usr/local/bin/php App/Webroot/index.php install createAdmin /tmp/config.json
+RUN /usr/local/bin/php App/Webroot/index.php control createTsTable /tmp/config.json
+RUN /usr/local/bin/php App/Webroot/index.php agent updateServerList /tmp/config.json
+RUN /usr/local/bin/php App/Webroot/index.php administration generate_model /tmp/config.json
+RUN /usr/local/bin/php App/Webroot/index.php administration admin_table /tmp/config.json
 
 RUN a2enmod rewrite remoteip
