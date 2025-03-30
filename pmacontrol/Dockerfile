@@ -49,6 +49,9 @@ RUN sed -ri -e "s!hostname=127.0.0.1!hostname=${PMACONTROL_DB_HOST}!" configurat
     sed -ri -e "s!user=root!user=${PMACONTROL_DB_USER}!" configuration/db.config.ini.php && \
     sed -ri -e "s!password='password'!password=${PMACONTROL_DB_PASSWORD}!" configuration/db.config.ini.php && \
     sed -ri -e "s!database=pmacontrol!database=${PMACONTROL_DB_BASE}!" configuration/db.config.ini.php
+RUN /usr/local/bin/php App/Webroot/index.php install index
+RUN /usr/local/bin/php App/Webroot/index.php install createOrganisation
+RUN /usr/local/bin/php App/Webroot/index.php install createAdmin
 RUN /usr/local/bin/php App/Webroot/index.php control createTsTable
 RUN /usr/local/bin/php App/Webroot/index.php agent updateServerList
 RUN /usr/local/bin/php App/Webroot/index.php administration generate_model
