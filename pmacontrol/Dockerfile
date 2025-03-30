@@ -35,6 +35,7 @@ RUN pecl install ssh2 \
 # Apache conf
 RUN sed -ri -e 's!/var/www/html!/data!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!/data!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
 
 # PMAControl
 RUN git clone https://github.com/PmaControl/PmaControl.git /data && \
@@ -48,5 +49,9 @@ RUN sed -ri -e "s!hostname=127.0.0.1!hostname=${PMACONTROL_DB_HOST}!" configurat
     sed -ri -e "s!user=root!user=${PMACONTROL_DB_USER}!" configuration/db.config.ini.php && \
     sed -ri -e "s!password='password'!password=${PMACONTROL_DB_PASSWORD}!" configuration/db.config.ini.php && \
     sed -ri -e "s!database=pmacontrol!database=${PMACONTROL_DB_BASE}!" configuration/db.config.ini.php
+RUN /usr/local/bin/php App/Webroot/index.php control createTsTable
+RUN /usr/local/bin/php App/Webroot/index.php agent updateServerList
+RUN /usr/local/bin/php App/Webroot/index.php administration generate_model
+RUN /usr/local/bin/php App/Webroot/index.php administration admin_table
 
 RUN a2enmod rewrite remoteip

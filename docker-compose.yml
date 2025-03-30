@@ -11,8 +11,9 @@ services:
       dockerfile: mariadb/Dockerfile
     restart: always
     volumes:
-#      - db:/var/lib/mysql:Z
-      - ./mariadb/init/:/docker-entrypoint-initdb.d/:ro
+      - db:/var/lib/mysql:Z
+#      - ./mariadb/init/:/docker-entrypoint-initdb.d/:ro
+      - ./mariadb/conf/:/etc/mysql/conf.d/:ro
     environment:
       - MARIADB_ROOT_PASSWORD=password
       - MARIADB_AUTO_UPGRADE=1
@@ -35,4 +36,5 @@ services:
       - "8080:80"
     networks:
       - mynetwork
-
+volumes:
+  db:
