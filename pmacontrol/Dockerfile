@@ -17,6 +17,7 @@ RUN apt-get update -qq && \
     gnupg \
     unzip \
     graphviz \
+    mariadb-client \
     lsb-release \
     libcurl4-openssl-dev \
     libssh2-1-dev \
@@ -48,15 +49,20 @@ RUN sed -ri -e "s!DB_HOST!${PMACONTROL_DB_HOST}!" /tmp/config.json && \
     sed -ri -e "s!DB_USER!${PMACONTROL_DB_USER}!" /tmp/config.json && \
     sed -ri -e "s!DB_PASSWORD!${PMACONTROL_DB_PASSWORD}!" /tmp/config.json && \
     sed -ri -e "s!DB_BASE!${PMACONTROL_DB_BASE}!" /tmp/config.json
-RUN /usr/local/bin/php App/Webroot/index.php install webroot /tmp/config.json
-RUN /usr/local/bin/php App/Webroot/index.php install index /tmp/config.json
-RUN /usr/local/bin/php App/Webroot/index.php install createOrganisation /tmp/config.json
-RUN /usr/local/bin/php App/Webroot/index.php install createAdmin /tmp/config.json
-RUN /usr/local/bin/php App/Webroot/index.php ldap updateFromInstall /tmp/config.json
-RUN /usr/local/bin/php App/Webroot/index.php webservice addAccount /tmp/config.json
-RUN /usr/local/bin/php App/Webroot/index.php control createTsTable /tmp/config.json
-RUN /usr/local/bin/php App/Webroot/index.php agent updateServerList /tmp/config.json
-RUN /usr/local/bin/php App/Webroot/index.php administration generate_model /tmp/config.json
-RUN /usr/local/bin/php App/Webroot/index.php administration admin_table /tmp/config.json
-
+#RUN /usr/local/bin/php App/Webroot/index.php install webroot /tmp/config.json
+#RUN /usr/local/bin/php App/Webroot/index.php install index /tmp/config.json
+#RUN /usr/local/bin/php App/Webroot/index.php install createOrganisation /tmp/config.json
+#RUN /usr/local/bin/php App/Webroot/index.php install createAdmin /tmp/config.json
+#RUN /usr/local/bin/php App/Webroot/index.php ldap updateFromInstall /tmp/config.json
+#RUN /usr/local/bin/php App/Webroot/index.php webservice addAccount /tmp/config.json
+#RUN /usr/local/bin/php App/Webroot/index.php control createTsTable
+#RUN /usr/local/bin/php App/Webroot/index.php agent updateServerList
+#RUN /usr/local/bin/php App/Webroot/index.php administration generate_model
+#RUN /usr/local/bin/php App/Webroot/index.php administration admin_table
+COPY ./pmacontrol/script/init.sh /tmp/init.sh
 RUN a2enmod rewrite remoteip
+
+COPY ./pmacontrol/script/init.sh /init.sh
+RUN chmod 755 /init.sh
+
+ENTRYPOINT ["/bin/bash", "/init.sh"]
