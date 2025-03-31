@@ -49,6 +49,7 @@ RUN sed -ri -e "s!hostname=127.0.0.1!hostname=${PMACONTROL_DB_HOST}!" configurat
     sed -ri -e "s!user=root!user=${PMACONTROL_DB_USER}!" configuration/db.config.ini.php && \
     sed -ri -e "s!password='password'!password=${PMACONTROL_DB_PASSWORD}!" configuration/db.config.ini.php && \
     sed -ri -e "s!database=pmacontrol!database=${PMACONTROL_DB_BASE}!" configuration/db.config.ini.php
+RUN mv configuration/db.config.ini.php configuration/db.config.ini.php.rm
 COPY ./pmacontrol/json/config.json /tmp/config.json
 RUN sed -ri -e "s!DB_HOST!${PMACONTROL_DB_HOST}!" /tmp/config.json && \
     sed -ri -e "s!DB_USER!${PMACONTROL_DB_USER}!" /tmp/config.json && \
@@ -61,5 +62,6 @@ RUN /usr/local/bin/php App/Webroot/index.php control createTsTable /tmp/config.j
 RUN /usr/local/bin/php App/Webroot/index.php agent updateServerList /tmp/config.json
 RUN /usr/local/bin/php App/Webroot/index.php administration generate_model /tmp/config.json
 RUN /usr/local/bin/php App/Webroot/index.php administration admin_table /tmp/config.json
+RUN mv configuration/db.config.ini.php.rm configuration/db.config.ini.php
 
 RUN a2enmod rewrite remoteip
