@@ -12,7 +12,6 @@ services:
     restart: always
     volumes:
       - db:/var/lib/mysql:Z
-      - ./mariadb/init/:/docker-entrypoint-initdb.d/:ro
       - ./mariadb/conf/:/etc/mysql/conf.d/:ro
     environment:
       - MARIADB_ROOT_PASSWORD=password
@@ -20,9 +19,15 @@ services:
       - MARIADB_DISABLE_UPGRADE_BACKUP=1
     networks:
       - mynetwork
+    profiles:
+      - db
+      - pmacontrol
 
   pmacontrol:
     container_name: "pmacontrol"
+    depends_on:
+      mariadb:
+        condition: service_started
     build:
       context: .
       dockerfile: pmacontrol/Dockerfile
@@ -36,5 +41,7 @@ services:
       - "8080:80"
     networks:
       - mynetwork
+    profiles:
+      - pmacontrol
 volumes:
   db:
