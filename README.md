@@ -2,7 +2,7 @@
 Docker image for pmacontrol
 
 To run it :
-`docker compose up -d`
+`docker compose --profile pmacontrol up -d`
 
 To stop it :
-`docker compose down`
+`docker compose --profile pmacontrol down`
