@@ -31,6 +31,6 @@ echo "glial agent check_daemon"
 echo "glial control service"
 /usr/local/bin/php glial control service
 
-chown -R www-data:www-data /data/tmp/log /data/tmp/database
+chown -R www-data:www-data tmp/log tmp/database
 
 apache2-foreground

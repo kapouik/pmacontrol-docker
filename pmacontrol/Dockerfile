@@ -29,7 +29,7 @@ RUN apt-get update -qq && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # PHP Extensions
-RUN docker-php-ext-install -j$(nproc) gd mysqli curl gmp
+RUN docker-php-ext-install -j$(nproc) gd mysqli curl gmp sysvmsg sysvsem sysvsem
 
 # Apache conf
 RUN sed -ri -e 's!/var/www/html!/data!g' /etc/apache2/sites-available/*.conf
