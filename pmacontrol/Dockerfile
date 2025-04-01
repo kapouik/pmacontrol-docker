@@ -39,26 +39,22 @@ RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.c
 # PMAControl
 RUN git clone https://github.com/PmaControl/PmaControl.git /data && \
     git config core.fileMode false && \
+    rm -rf .git && \
     composer install
-RUN cp -a config_sample/*.config.php configuration/ && \
+RUN rm -rf configuration && \
+    mkdir -p /configuration && \
+    ln -s /configuration configuration
+RUN if [ ! -f /configuration/db.config.ini.php ]; then \
+    cp -a config_sample/*.config.php configuration/ && \
     cp -a config_sample/*.ini.php configuration/ && \
-    cp -a config_sample/*.ini configuration/
-RUN sed -ri -e 's!/pmacontrol/!/!' configuration/webroot.config.php
+    cp -a config_sample/*.ini configuration/ && \
+    sed -ri -e 's!/pmacontrol/!/!' configuration/webroot.config.php; fi
+RUN chown -R www-data:www-data /data /configuration
 COPY ./pmacontrol/json/config.json /tmp/config.json
 RUN sed -ri -e "s!DB_HOST!${PMACONTROL_DB_HOST}!" /tmp/config.json && \
     sed -ri -e "s!DB_USER!${PMACONTROL_DB_USER}!" /tmp/config.json && \
     sed -ri -e "s!DB_PASSWORD!${PMACONTROL_DB_PASSWORD}!" /tmp/config.json && \
     sed -ri -e "s!DB_BASE!${PMACONTROL_DB_BASE}!" /tmp/config.json
-#RUN /usr/local/bin/php App/Webroot/index.php install webroot /tmp/config.json
-#RUN /usr/local/bin/php App/Webroot/index.php install index /tmp/config.json
-#RUN /usr/local/bin/php App/Webroot/index.php install createOrganisation /tmp/config.json
-#RUN /usr/local/bin/php App/Webroot/index.php install createAdmin /tmp/config.json
-#RUN /usr/local/bin/php App/Webroot/index.php ldap updateFromInstall /tmp/config.json
-#RUN /usr/local/bin/php App/Webroot/index.php webservice addAccount /tmp/config.json
-#RUN /usr/local/bin/php App/Webroot/index.php control createTsTable
-#RUN /usr/local/bin/php App/Webroot/index.php agent updateServerList
-#RUN /usr/local/bin/php App/Webroot/index.php administration generate_model
-#RUN /usr/local/bin/php App/Webroot/index.php administration admin_table
 COPY ./pmacontrol/script/init.sh /tmp/init.sh
 RUN a2enmod rewrite remoteip
 

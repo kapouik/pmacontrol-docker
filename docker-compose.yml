@@ -32,6 +32,8 @@ services:
       context: .
       dockerfile: pmacontrol/Dockerfile
     restart: always
+    volumes:
+      - config:/configuration
     environment:
       - PMACONTROL_DB_HOST=mariadb
       - PMACONTROL_DB_USER=root
@@ -45,3 +47,4 @@ services:
       - pmacontrol
 volumes:
   db:
+  config:
