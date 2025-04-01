@@ -12,6 +12,7 @@ if [[ /configuration/init.lock ]]
 		/usr/local/bin/php App/Webroot/index.php agent updateServerList 
 		/usr/local/bin/php App/Webroot/index.php administration generate_model 
 		/usr/local/bin/php App/Webroot/index.php administration admin_table
+		sed -ri -e 's!/pmacontrol/!/!' configuration/webroot.config.php
 		touch /configuration/init.lock
 fi
 
