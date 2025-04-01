@@ -10,7 +10,7 @@ services:
       dockerfile: mariadb/Dockerfile
     restart: always
     volumes:
-      - db:/var/lib/mysql:z
+      - db:/var/lib/mysql:Z
       - ./mariadb/conf/:/etc/mysql/conf.d/:ro
     environment:
       - MARIADB_ROOT_PASSWORD=password
@@ -39,7 +39,6 @@ services:
       - config:/configuration
       - tmpdb:/data/tmp/database
       - tmplog:/data/tmp/log
-      - db:/var/lib/mysql:z
     environment:
       - PMACONTROL_DB_HOST=mariadb
       - PMACONTROL_DB_USER=root
