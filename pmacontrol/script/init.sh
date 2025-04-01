@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ /configuration/init.lock ]]
+if [[ ! -f /configuration/init.lock ]]
 	then
 		echo "App/Webroot/index.php install webroot"
 		/usr/local/bin/php App/Webroot/index.php install webroot /tmp/config.json
