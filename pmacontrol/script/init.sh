@@ -2,6 +2,7 @@
 
 if [[ /configuration/init.lock ]]
 	then
+		sleep 15
 		/usr/local/bin/php App/Webroot/index.php install webroot /tmp/config.json
 		/usr/local/bin/php App/Webroot/index.php install index /tmp/config.json
 		/usr/local/bin/php App/Webroot/index.php install createOrganisation /tmp/config.json
