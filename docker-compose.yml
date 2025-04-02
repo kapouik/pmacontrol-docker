@@ -23,8 +23,8 @@ services:
       - pmacontrol
     healthcheck:
       test: ["CMD", "mariadb-admin" ,"ping", "-h", "localhost"]
-      timeout: 10s
-      retries: 10
+      timeout: 2s
+      retries: 30
 
   pmacontrol:
     container_name: "pmacontrol"
