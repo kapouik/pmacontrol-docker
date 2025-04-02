@@ -12,7 +12,7 @@ ENV PMACONTROL_DB_BASE pmacontrol
 
 # git, unzip & zip are for composer
 RUN apt-get update -qq && \
-    apt-get install -qy \
+    apt-get install -qy --no-install-recommends \
     git \
     gnupg \
     unzip \
@@ -31,6 +31,14 @@ RUN apt-get update -qq && \
 
 # PHP Extensions
 RUN docker-php-ext-install -j$(nproc) gd mysqli curl gmp sysvmsg sysvsem sysvsem ldap
+
+RUN apt-get remove -yq --purge \
+    libcurl4-openssl-dev \
+    libssh2-1-dev \
+    libldap2-dev \
+    libpng-dev \
+    libgmp-dev \
+    zlib1g-dev
 
 # Apache conf
 RUN sed -ri -e 's!/var/www/html!/data!g' /etc/apache2/sites-available/*.conf
