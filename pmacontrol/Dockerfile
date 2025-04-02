@@ -24,6 +24,7 @@ RUN apt-get update -qq && \
     libldap2-dev \
     libpng-dev \
     libgmp-dev \
+    sysbench \
     zlib1g-dev \
     zip && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \

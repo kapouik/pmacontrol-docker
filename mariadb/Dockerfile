@@ -1,5 +1,6 @@
 FROM mariadb:10.11
 
+
 RUN apt-get update -qq && \
     apt-get install -qy \
     mariadb-plugin-rocksdb && \
