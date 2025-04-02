@@ -21,6 +21,7 @@ RUN apt-get update -qq && \
     lsb-release \
     libcurl4-openssl-dev \
     libssh2-1-dev \
+    libldap2-dev \
     libpng-dev \
     libgmp-dev \
     zlib1g-dev \
@@ -29,7 +30,7 @@ RUN apt-get update -qq && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # PHP Extensions
-RUN docker-php-ext-install -j$(nproc) gd mysqli curl gmp sysvmsg sysvsem sysvsem
+RUN docker-php-ext-install -j$(nproc) gd mysqli curl gmp sysvmsg sysvsem sysvsem ldap
 
 # Apache conf
 RUN sed -ri -e 's!/var/www/html!/data!g' /etc/apache2/sites-available/*.conf
