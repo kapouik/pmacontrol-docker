@@ -28,10 +28,30 @@ RUN apt-get update -qq && \
     zlib1g-dev \
     zip && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # PHP Extensions
 RUN docker-php-ext-install -j$(nproc) gd mysqli curl gmp sysvmsg sysvsem sysvsem ldap
+
+# Apache conf
+RUN sed -ri -e 's!/var/www/html!/data!g' /etc/apache2/sites-available/*.conf && \
+    sed -ri -e 's!/var/www/!/data!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf && \
+    sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
+
+# PMAControl
+RUN git clone https://github.com/PmaControl/PmaControl.git /data && \
+    git config core.fileMode false && \
+    rm -rf .git && \
+    composer install --no-dev && \
+    rm -rf configuration && \
+    mkdir -p /configuration && \
+    ln -s /configuration configuration && \
+    if [ ! -f /configuration/db.config.ini.php ]; then \
+    cp -a config_sample/*.config.php configuration/ && \
+    cp -a config_sample/*.ini.php configuration/ && \
+    cp -a config_sample/*.ini configuration/ && \
+    sed -ri -e 's!/pmacontrol/!/!' configuration/webroot.config.php; fi &&\
+    chown -R www-data:www-data /data /configuration
 
 RUN apt-get remove -yq --purge \
     libcurl4-openssl-dev \
@@ -39,27 +59,16 @@ RUN apt-get remove -yq --purge \
     libldap2-dev \
     libpng-dev \
     libgmp-dev \
-    zlib1g-dev
+    zlib1g-dev \
+    binutils \
+    cpp \
+    g++ \
+    make \
+    autoconf \
+    dpkg-dev \
+    gcc && \
+    apt-get clean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Apache conf
-RUN sed -ri -e 's!/var/www/html!/data!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!/data!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-RUN sed -ri -e 's!AllowOverride None!AllowOverride All!g' /etc/apache2/apache2.conf
-
-# PMAControl
-RUN git clone https://github.com/PmaControl/PmaControl.git /data && \
-    git config core.fileMode false && \
-    rm -rf .git && \
-    composer install
-RUN rm -rf configuration && \
-    mkdir -p /configuration && \
-    ln -s /configuration configuration
-RUN if [ ! -f /configuration/db.config.ini.php ]; then \
-    cp -a config_sample/*.config.php configuration/ && \
-    cp -a config_sample/*.ini.php configuration/ && \
-    cp -a config_sample/*.ini configuration/ && \
-    sed -ri -e 's!/pmacontrol/!/!' configuration/webroot.config.php; fi
-RUN chown -R www-data:www-data /data /configuration
 COPY ./pmacontrol/json/config.json /tmp/config.json
 RUN sed -ri -e "s!DB_HOST!${PMACONTROL_DB_HOST}!" /tmp/config.json && \
     sed -ri -e "s!DB_USER!${PMACONTROL_DB_USER}!" /tmp/config.json && \
