@@ -1,4 +1,4 @@
-FROM php:8.3-apache
+FROM php:8.3-apache AS build
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 
@@ -77,7 +77,11 @@ RUN sed -ri -e "s!DB_HOST!${PMACONTROL_DB_HOST}!" /tmp/config.json && \
 COPY ./pmacontrol/script/init.sh /tmp/init.sh
 RUN a2enmod rewrite remoteip
 
-COPY ./pmacontrol/script/init.sh /init.sh
-RUN chmod 755 /init.sh
+COPY --chmod=755 ./pmacontrol/script/init.sh /init.sh
+
+FROM scratch
+
+WORKDIR /data
+COPY --from=build / /
 
 ENTRYPOINT ["/bin/bash", "/init.sh"]
